@@ -3,7 +3,7 @@
 
 # Global configuration
 with-expecter: true
-filename: "mock_{{.InterfaceName}}.go" 
+filename: "mock_{{.InterfaceName}}.go"
 outpkg: mocks
 dir: "./mocks"
 
@@ -13,13 +13,10 @@ packages:
     interfaces:
       UserRepository:
         config:
-          dir: "./internal/interfaces"
           filename: "mock_user_repository.go"
       EmailService:
         config:
-          dir: "./internal/interfaces" 
           filename: "mock_email_service.go"
       CacheService:
         config:
-          dir: "./internal/interfaces"
           filename: "mock_cache_service.go"
