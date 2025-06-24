@@ -6,10 +6,10 @@ This example demonstrates reliable mock generation using **direct Mockery CLI ex
 
 ## Project Structure
 
-```
+```text
 command-line-only/
 ├── go.mod                              # Go module definition
-├── .mockery.yaml                       # Mockery configuration  
+├── .mockery.yaml                       # Mockery configuration
 ├── CLAUDE.md                           # AI agent guidelines
 ├── README.md                           # This file
 ├── mocks/                              # Generated mocks (created by mockery)
@@ -26,13 +26,17 @@ command-line-only/
 ## Mock Generation Workflow
 
 ### 1. AI Discovers Interfaces
+
 The AI agent scans the project to identify interfaces that need mocking:
+
 - `UserRepository` in `internal/interfaces/repository.go`
-- `EmailService` in `internal/interfaces/email.go`  
+- `EmailService` in `internal/interfaces/email.go`
 - `CacheService` in `internal/interfaces/cache.go`
 
 ### 2. AI Generates Mocks with Mockery Commands
+
 ```bash
+
 # Generate all mocks using config file
 mockery --config=.mockery.yaml
 
@@ -43,7 +47,9 @@ mockery --name=CacheService --dir=./internal/interfaces --output=./mocks
 ```
 
 ### 3. AI Uses Generated Mocks in Tests
+
 The generated mocks follow Mockery v2 patterns with expecter methods:
+
 ```go
 // Example generated mock usage
 mockRepo := mocks.NewMockUserRepository(t)
@@ -54,6 +60,7 @@ mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*interfaces.User"))
 ## Mockery Configuration
 
 The `.mockery.yaml` file provides:
+
 - **Global settings**: expecter methods, naming patterns
 - **Per-interface configuration**: custom output locations
 - **Package-level organization**: grouped by Go packages
@@ -61,7 +68,7 @@ The `.mockery.yaml` file provides:
 ## AI Agent Workflow
 
 1. **Read CLAUDE.md** - Get command patterns and guidelines
-2. **Scan interfaces** - Identify what needs mocking  
+2. **Scan interfaces** - Identify what needs mocking
 3. **Run mockery commands** - Generate mock implementations
 4. **Import generated mocks** - Add proper import statements
 5. **Implement tests** - Use expecter patterns for assertions
@@ -97,7 +104,8 @@ go test ./internal/service/... -v
 ## Expected Generated Files
 
 After running mockery, you should see:
-```
+
+```text
 mocks/
 ├── mock_user_repository.go
 ├── mock_email_service.go
@@ -105,6 +113,7 @@ mocks/
 ```
 
 Each mock file contains:
+
 - Mock struct implementing the interface
 - Constructor function (`NewMockInterfaceName`)
 - Expecter methods for test setup
@@ -113,7 +122,9 @@ Each mock file contains:
 ## Manual Testing Instructions
 
 ### Purpose
+
 This example tests whether an AI agent can follow the CLAUDE.md guidelines to:
+
 1. Generate mocks using mockery commands
 2. Implement complete test cases using generated mocks
 3. Follow proper Go testing patterns
@@ -128,13 +139,13 @@ This example tests whether an AI agent can follow the CLAUDE.md guidelines to:
 
 Copy and paste this prompt to a new Claude Code session:
 
-```
+```text
 I have a Go project with interfaces that need mocking for tests. Please help me implement the missing test functionality.
 
 Looking at internal/service/user_service_test.go, I can see there are TODO comments on lines 13-17 that explain what needs to be done:
 
 1. Run mockery commands to generate mocks
-2. Import generated mocks from ./mocks package  
+2. Import generated mocks from ./mocks package
 3. Use generated mocks in test implementations
 
 Please follow the instructions in CLAUDE.md and implement the complete test suite. The test file shows what mocks are needed and how they should be used.
@@ -145,14 +156,17 @@ Start by reading CLAUDE.md for the specific command patterns and guidelines.
 ### Expected AI Actions
 
 The AI should:
+
 1. **Read CLAUDE.md** to understand the workflow
 2. **Discover interfaces** in `internal/interfaces/` directory
 3. **Run mockery commands** to generate mocks:
+
    ```bash
    mockery --name=UserRepository --dir=./internal/interfaces --output=./mocks
    mockery --name=EmailService --dir=./internal/interfaces --output=./mocks
    mockery --name=CacheService --dir=./internal/interfaces --output=./mocks
    ```
+
 4. **Update imports** in test files to use generated mocks
 5. **Implement setupMocks functions** with proper expectations
 6. **Remove test skips** and complete test implementations
