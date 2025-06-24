@@ -1,0 +1,16 @@
+# Mockery configuration file for Makefile-based mock generation
+# This file defines how mockery should generate mocks for this project
+
+# Global configuration
+with-expecter: true
+filename: "Mock{{.InterfaceName}}.go"
+
+# Package-specific interface configurations
+packages:
+  github.com/example/makefile-mocks/internal/interfaces:
+    config:
+      all: true
+      dir: "./mocks"
+      outpkg: "mocks"
+      filename: "Mock{{.InterfaceName}}.go"
+      with-expecter: true
