@@ -88,22 +88,66 @@ The `.mockery.yaml` file provides:
 - Mockery v2.53+ installed: `go install github.com/vektra/mockery/v2@latest`
 - AI agent with shell command execution capability (e.g., Claude Code)
 
-## Quick Start
+## Testing Instructions
 
-```bash
-# Install dependencies
-go mod tidy
+### Purpose
 
-# Generate mocks (AI should run this)
-mockery --config=.mockery.yaml
+This example tests whether an AI agent can follow the CLAUDE.md guidelines to:
 
-# Run tests with generated mocks
-go test ./internal/service/... -v
-```
+1. Generate mocks using mockery commands
+2. Implement complete test cases using generated mocks
+3. Follow proper Go testing patterns
 
-## Expected Generated Files
+### Quick Start
 
-After running mockery, you should see:
+1. **Install dependencies**:
+
+   ```bash
+   go mod tidy
+   ```
+
+2. **Create New AI Session**: Open a fresh Claude Code session in this directory
+
+3. **Use this test prompt**:
+
+   ```text
+   I have a Go project with interfaces that need mocking for tests. Please help me implement the missing test functionality.
+
+   Looking at internal/service/user_service_test.go, I can see there are TODO comments on lines 13-17 that explain what needs to be done:
+
+   1. Run mockery commands to generate mocks
+   2. Import generated mocks from ./mocks package
+   3. Use generated mocks in test implementations
+
+   Please follow the instructions in CLAUDE.md and implement the complete test suite. The test file shows what mocks are needed and how they should be used.
+
+   Start by reading CLAUDE.md for the specific command patterns and guidelines.
+   ```
+
+### Expected AI Actions
+
+The AI should:
+
+1. **Read CLAUDE.md** to understand the workflow
+2. **Discover interfaces** in `internal/interfaces/` directory
+3. **Run mockery commands** to generate mocks:
+
+   ```bash
+   mockery --config=.mockery.yaml
+   # Or individually:
+   mockery --name=UserRepository --dir=./internal/interfaces --output=./mocks
+   mockery --name=EmailService --dir=./internal/interfaces --output=./mocks
+   mockery --name=CacheService --dir=./internal/interfaces --output=./mocks
+   ```
+
+4. **Update imports** in test files to use generated mocks
+5. **Implement setupMocks functions** with proper expectations
+6. **Remove test skips** and complete test implementations
+7. **Validate** that tests compile and pass
+
+### Expected Generated Files
+
+After AI implementation, you should see:
 
 ```text
 mocks/
@@ -119,59 +163,6 @@ Each mock file contains:
 - Expecter methods for test setup
 - Full method implementations with argument matching
 
-## Manual Testing Instructions
-
-### Purpose
-
-This example tests whether an AI agent can follow the CLAUDE.md guidelines to:
-
-1. Generate mocks using mockery commands
-2. Implement complete test cases using generated mocks
-3. Follow proper Go testing patterns
-
-### Test Setup
-
-1. **Create New AI Session**: Open a fresh Claude Code session in this directory
-2. **Provide Context**: The AI should read `CLAUDE.md` for guidelines
-3. **Trigger Implementation**: Use the prompt below to activate the workflow
-
-### Test Prompt
-
-Copy and paste this prompt to a new Claude Code session:
-
-```text
-I have a Go project with interfaces that need mocking for tests. Please help me implement the missing test functionality.
-
-Looking at internal/service/user_service_test.go, I can see there are TODO comments on lines 13-17 that explain what needs to be done:
-
-1. Run mockery commands to generate mocks
-2. Import generated mocks from ./mocks package
-3. Use generated mocks in test implementations
-
-Please follow the instructions in CLAUDE.md and implement the complete test suite. The test file shows what mocks are needed and how they should be used.
-
-Start by reading CLAUDE.md for the specific command patterns and guidelines.
-```
-
-### Expected AI Actions
-
-The AI should:
-
-1. **Read CLAUDE.md** to understand the workflow
-2. **Discover interfaces** in `internal/interfaces/` directory
-3. **Run mockery commands** to generate mocks:
-
-   ```bash
-   mockery --name=UserRepository --dir=./internal/interfaces --output=./mocks
-   mockery --name=EmailService --dir=./internal/interfaces --output=./mocks
-   mockery --name=CacheService --dir=./internal/interfaces --output=./mocks
-   ```
-
-4. **Update imports** in test files to use generated mocks
-5. **Implement setupMocks functions** with proper expectations
-6. **Remove test skips** and complete test implementations
-7. **Validate** that tests compile and pass
-
 ### Success Criteria
 
 - [ ] Three mock files generated in `./mocks/` directory
@@ -180,16 +171,6 @@ The AI should:
 - [ ] Tests compile without errors: `go test ./internal/service/... -v`
 - [ ] All test cases pass when executed
 - [ ] Code follows patterns shown in CLAUDE.md examples
-
-### Expected Generated Files
-
-After AI implementation:
-```
-mocks/
-├── mock_user_repository.go
-├── mock_email_service.go
-└── mock_cache_service.go
-```
 
 ### Validation Commands
 
@@ -210,6 +191,7 @@ grep -n "EXPECT" internal/service/*_test.go
 ## Validation
 
 The AI should verify:
+
 - [ ] All interface methods are implemented in mocks
 - [ ] Generated mocks compile without errors
 - [ ] Tests use proper expecter patterns
