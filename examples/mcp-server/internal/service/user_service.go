@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/example/prompt-only-mocks/internal/domain"
+	"github.com/example/mcp-server-mocks/internal/domain"
 )
 
 // UserService implements business logic for user operations
@@ -120,7 +120,7 @@ func (s *UserService) SendPasswordReset(ctx context.Context, email string) error
 	if err != nil {
 		return fmt.Errorf("user not found: %w", err)
 	}
-	
+
 	if user == nil {
 		return fmt.Errorf("user with email %s not found", email)
 	}

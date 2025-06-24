@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/example/prompt-only-mocks/internal/domain"
+	"github.com/example/mcp-server-mocks/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -92,9 +92,6 @@ func TestUserService_CreateUser(t *testing.T) {
 }
 
 func TestUserService_GetUser(t *testing.T) {
-	ctx := context.Background()
-	userID := "test-user-id"
-
 	t.Run("cache hit", func(t *testing.T) {
 		// TODO: AI should generate mocks for this test
 		// CacheService.Get should return cached user, nil
