@@ -181,6 +181,8 @@ After building and testing all approaches, here's what actually works:
 
 ### Token Efficiency Comparison
 
+> **Note**: Token counts are empirical estimates based on typical conversations using each approach. Actual usage may vary depending on project complexity, interface count, and conversation length. Context tokens include CLAUDE.md guidelines, file contents, user prompts, and conversation history.
+
 | Approach | Context Tokens | Response Tokens | Total per Conversation | Efficiency |
 |----------|----------------|-----------------|------------------------|------------|
 | **Prompt-Only** | ~1,500 | ~300 | ~1,800 | Poor |
