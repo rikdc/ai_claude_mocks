@@ -2,7 +2,7 @@
 
 You know that moment when you ask an AI coding assistant to generate some mocks for your Go tests, and it confidently produces what looks like reasonable code? You run the tests and discover half of them are flaky, the mocks don't follow your project patterns, and you spend more time fixing the AI's work than writing the mocks yourself.
 
-I hit this wall repeatedly. Instead of trying to teach AI to write better mocks (spoiler: that approach was a dead end), I flipped the problem entirely. What if I stopped asking AI to generate code and started giving it better tools to orchestrate instead?
+I kept hitting the same wall. Instead of forcing AI to write better mocks (spoiler: that went nowhere), I flipped the problem. What if, instead of generating code, the AI simply knew which command to run? One that already had my context baked in, with the right flags, the right paths, and none of the guesswork?
 
 ## The Core Insight
 
@@ -81,19 +81,19 @@ This adds up fast when you're generating mocks regularly.
 
 **Location**: [`mcp-server/`](mcp-server/)
 
-**The Theory**: Build a production-grade service that wraps Mockery with proper APIs, validation, and all the enterprise features.
+**The Theory**: Build a production-grade service around Mockery, complete with APIs, validation, config options, and all the bells and whistles you'd expect in a “real” system.
 
 I implemented a Go-based MCP server with AST parsing, interface discovery, Docker deployment, comprehensive error handling, and enough configuration options to make your head spin.
 
 **What Actually Happened**:
 
-- It works beautifully
+- Ran reliably with minimal setup
 - Production-ready architecture with proper isolation
 - Supports multiple AI agents simultaneously
 - Advanced features like dependency analysis
 - Took significantly longer to build than the other approaches
 
-**The Catch**: This solves problems most teams don't have yet. Unless you're running multiple AI agents across large codebases, it's impressive overkill.
+**The Catch**: The Catch: This solves coordination and scaling issues, like managing mock generation across multiple services or sharing infrastructure between AI agents. Unless you're running multiple AI agents across large codebases, it's impressive overkill.
 
 **Reality Check**: I built this because I could, not because I needed to. It's the kind of solution that looks great in architecture reviews but makes you question your life choices during 2 AM debugging sessions.
 
@@ -105,11 +105,20 @@ The direct tooling approach won decisively, with the Makefile variant taking the
 
 **The Real Comparison**:
 
+It is not just about avoiding flaky AI-generated code, although that was the starting point. The real goal is reliable, framework-compliant mocks that integrate smoothly into existing Go projects. The solution needs to:
+
+- Pass tests consistently
+- Follow established repository patterns
+- Integrate with the Go toolchain and frameworks
+- Be usable by a single team today, with the option to scale across teams later
+
+On those fronts, the Makefile-based direct tooling approach was the clear winner.
+
 - **50 lines of Makefile** vs. **1000+ lines of Go code** for the MCP server
 - **Zero infrastructure** vs. **Docker deployment and JSON-RPC**
 - **Direct command execution** vs. **Complex protocol implementation**
 
-This was honestly surprising. I expected the MCP server to be the clear winner, but simplicity trumped sophistication. The Makefile approach provides 90% of the benefits with 10% of the complexity.
+This was honestly surprising. I expected the MCP server to be the clear winner, but simplicity trumped sophistication. In the end, the Makefile approach met the actual priorities: it generated mocks that worked, matched project standards, and dropped cleanly into developer workflows. The rest added overhead without solving more urgent problems.
 
 Here's what made the difference:
 
