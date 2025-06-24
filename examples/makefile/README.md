@@ -1,194 +1,148 @@
 # Makefile Mock Generation Example
 
-This example demonstrates reliable mock generation using a **simple Makefile** that wraps Mockery commands.
+This example demonstrates reliable mock generation using **simple Make commands** instead of raw Mockery CLI.
 
-## Why Makefile?
-
-- **Dead simple** - Everyone understands `make generate-mocks`
-- **Fast execution** - No server startup or protocol overhead
-- **Easy debugging** - See exactly what commands run
-- **Universal** - Works in any environment with make + mockery
+⚠️ **Note**: This example requires manual testing with an AI agent. See [Manual Testing Instructions](#manual-testing-instructions) below.
 
 ## Project Structure
 
 ```text
-examples/makefile/
-├── Makefile                    # ← Mock generation commands
-├── .mockery.yaml              # ← Mockery configuration
-├── go.mod
-├── internal/
-│   ├── interfaces/            # ← Interface definitions
-│   │   ├── repository.go      # UserRepository
-│   │   ├── email.go           # EmailService  
-│   │   └── cache.go           # CacheService
-│   └── service/
-│       ├── user_service.go    # ← Service implementation
-│       └── user_service_test.go # ← Tests using mocks
-└── mocks/                     # ← Generated mocks (created by make)
-    ├── MockUserRepository.go
-    ├── MockEmailService.go
-    └── MockCacheService.go
+makefile/
+├── go.mod                              # Go module definition
+├── .mockery.yaml                       # Mockery configuration
+├── Makefile                            # Make targets for mock generation
+├── README.md                           # This file
+├── mocks/                              # Generated mocks (created by make)
+└── internal/
+    ├── interfaces/
+    │   ├── repository.go               # UserRepository interface
+    │   ├── email.go                    # EmailService interface
+    │   └── cache.go                    # CacheService interface
+    └── service/
+        ├── user_service.go             # Business logic implementation
+        └── user_service_test.go        # Tests using generated mocks
 ```
 
-## Quick Start
+## Mock Generation Workflow
 
-### 1. Install Mockery
-```bash
-go install github.com/vektra/mockery/v2@latest
-```
+### 1. AI Discovers Interfaces
 
-### 2. Generate Mocks
-```bash
-make generate-mocks
-```
+The AI agent scans the project to identify interfaces that need mocking:
 
-### 3. Run Tests
-```bash
-make test
-```
+- `UserRepository` in `internal/interfaces/repository.go`
+- `EmailService` in `internal/interfaces/email.go`
+- `CacheService` in `internal/interfaces/cache.go`
 
-## Available Make Targets
+### 2. AI Generates Mocks with Make Commands
 
 ```bash
-# Generate all mocks
+# Generate all mocks using make
 make generate-mocks
 
-# Clean generated mocks
-make clean-mocks
-
-# Run tests
-make test
-
-# Full workflow: clean, generate, test
+# Or run full workflow
 make all
-
-# Install mockery if not present
-make install-mockery
-
-# Show help
-make help
 ```
 
-## Interface Definitions
+### 3. AI Uses Generated Mocks in Tests
 
-This example includes three interfaces:
+The generated mocks follow Mockery v2 patterns with expecter methods:
 
-### UserRepository
 ```go
-type UserRepository interface {
-    Create(ctx context.Context, user *User) error
-    GetByID(ctx context.Context, id string) (*User, error)
-    GetByEmail(ctx context.Context, email string) (*User, error)
-    Update(ctx context.Context, user *User) error
-    Delete(ctx context.Context, id string) error
-    List(ctx context.Context, offset, limit int) ([]*User, error)
-}
-```
-
-### EmailService
-```go
-type EmailService interface {
-    SendWelcomeEmail(ctx context.Context, user *User) error
-    SendPasswordResetEmail(ctx context.Context, email string, resetToken string) error
-    SendNotificationEmail(ctx context.Context, email string, subject string, body string) error
-}
-```
-
-### CacheService
-```go
-type CacheService interface {
-    Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
-    Get(ctx context.Context, key string) (interface{}, error)
-    Delete(ctx context.Context, key string) error
-    Exists(ctx context.Context, key string) (bool, error)
-}
-```
-
-## Generated Mock Quality
-
-The Makefile generates high-quality mocks with:
-
-### Testify Integration
-```go
-type MockUserRepository struct {
-    mock.Mock
-}
-
-func (m *MockUserRepository) Create(ctx context.Context, user *User) error {
-    args := m.Called(ctx, user)
-    return args.Error(0)
-}
-```
-
-### Expecter Methods
-```go
-// Type-safe expectation setup
-func (m *MockUserRepository) EXPECT() *MockUserRepository_Expecter {
-    return &MockUserRepository_Expecter{mock: &m.Mock}
-}
-
-// Usage in tests
+// Example generated mock usage
+mockRepo := mocks.NewMockUserRepository(t)
+mockRepo.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(nil, nil)
 mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*interfaces.User")).Return(nil)
 ```
 
-## Test Examples
+## Benefits of This Approach
 
-### Standard Test Setup
-```go
-func TestUserService_CreateUser(t *testing.T) {
-    // Arrange
-    mockRepo := &mocks.MockUserRepository{}
-    mockEmail := &mocks.MockEmailService{}
-    service := NewUserService(mockRepo, mockEmail)
-    
-    // Setup expectations
-    mockRepo.On("GetByEmail", mock.Anything, "test@example.com").Return(nil, nil)
-    mockRepo.On("Create", mock.Anything, mock.AnythingOfType("*interfaces.User")).Return(nil)
-    mockEmail.On("SendWelcomeEmail", mock.Anything, mock.AnythingOfType("*interfaces.User")).Return(nil)
-    
-    // Act
-    user, err := service.CreateUser(context.Background(), "test@example.com", "Test User")
-    
-    // Assert
-    require.NoError(t, err)
-    assert.NotNil(t, user)
-    
-    // Verify expectations
-    mockRepo.AssertExpectations(t)
-    mockEmail.AssertExpectations(t)
-}
+- **Simple Commands**: `make generate-mocks` vs complex mockery flags
+- **Fast Execution**: Direct command execution, no server overhead
+- **Easy Debugging**: See exact commands run via `make help`
+- **Universal**: Works everywhere with make + mockery
+
+## Prerequisites
+
+- Go 1.24.2+
+- Make installed
+- Mockery v2.53+: `make install-mockery` (or manual install)
+- AI agent with shell command execution capability (e.g., Claude Code)
+
+## Manual Testing Instructions
+
+### Purpose
+
+This example tests whether an AI agent can use Make commands to:
+
+1. Generate mocks using make targets
+2. Implement complete test cases using generated mocks
+3. Follow proper Go testing patterns
+
+### Quick Start
+
+1. **Install dependencies**:
+
+   ```bash
+   go mod tidy
+   make install-mockery
+   ```
+
+2. **Create New AI Session**: Open a fresh Claude Code session in this directory
+
+3. **Use this test prompt**:
+
+   ```text
+   I have a Go project with interfaces that need mocking for tests. Please help me implement the missing test functionality using the Makefile approach.
+
+   Looking at internal/service/user_service_test.go, I can see there are TODO comments that explain what needs to be done:
+
+   1. Use make commands to generate mocks
+   2. Import generated mocks from ./mocks package  
+   3. Use generated mocks in test implementations
+
+   Please use the available Make targets to generate mocks and implement the complete test suite. Run `make help` to see available commands.
+   ```
+
+### Expected AI Actions
+
+The AI should:
+
+1. **Run `make help`** to see available targets
+2. **Discover interfaces** in `internal/interfaces/` directory
+3. **Generate mocks** using make commands:
+
+   ```bash
+   make generate-mocks
+   # or
+   make all
+   ```
+
+4. **Update imports** in test files to use generated mocks
+5. **Implement setupMocks functions** with proper expectations
+6. **Remove test skips** and complete test implementations
+7. **Validate** that tests compile and pass
+
+### Success Criteria
+
+- [ ] Three mock files generated in `./mocks/` directory
+- [ ] All interfaces properly mocked with expecter methods
+- [ ] Test functions implement realistic scenarios (success, error cases)
+- [ ] Tests compile without errors: `go test ./internal/service/... -v`
+- [ ] All test cases pass when executed
+- [ ] AI used Make commands instead of raw mockery CLI
+
+### Validation Commands
+
+```bash
+# Verify mocks were generated
+make help
+ls -la ./mocks/
+
+# Check compilation and run tests
+make test
+
+# Full workflow test
+make all
 ```
 
-## Advantages Over Complex Approaches
-
-### vs. MCP Server
-- **No infrastructure** - No server process or JSON-RPC
-- **Faster** - Direct command execution
-- **Simpler debugging** - See exact mockery commands
-- **Less complexity** - 50 lines of Makefile vs. 1000+ lines of Go
-
-### vs. Manual Commands
-- **Consistent** - Same commands every time
-- **Discoverable** - `make help` shows all options
-- **Composable** - Easy to add new targets
-- **Documented** - Self-documenting workflow
-
-### vs. AI Prompting Only
-- **Reliable** - Uses proven Mockery tool
-- **No hallucination** - Real generated code
-- **Consistent quality** - Same output every time
-
-## When to Use This Approach
-
-**Perfect for:**
-- Simple to medium projects
-- Teams that prefer straightforward tooling
-- CI/CD pipelines
-- Developers who want predictable, debuggable workflows
-
-**Consider alternatives if:**
-- You need AI to discover interfaces dynamically
-- You want AI-assisted mock generation workflows
-- You have complex interface discovery requirements
-
-This Makefile approach provides the reliability of proven tooling with maximum simplicity and minimal overhead.
+Perfect for teams wanting simple, reliable mock generation without complex CLI commands.
