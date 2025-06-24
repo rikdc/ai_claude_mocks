@@ -1,0 +1,25 @@
+# Mockery configuration file for command-line mock generation
+# This file defines how mockery should generate mocks for this project
+
+# Global configuration
+with-expecter: true
+filename: "mock_{{.InterfaceName}}.go" 
+outpkg: mocks
+dir: "./mocks"
+
+# Package-specific interface configurations
+packages:
+  github.com/example/command-line-mocks/internal/interfaces:
+    interfaces:
+      UserRepository:
+        config:
+          dir: "./internal/interfaces"
+          filename: "mock_user_repository.go"
+      EmailService:
+        config:
+          dir: "./internal/interfaces" 
+          filename: "mock_email_service.go"
+      CacheService:
+        config:
+          dir: "./internal/interfaces"
+          filename: "mock_cache_service.go"
